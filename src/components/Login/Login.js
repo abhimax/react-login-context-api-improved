@@ -15,10 +15,10 @@ const reducerEmail = (state, action) => {
 };
 
 const reducerPassword = (state, action) => {
-  if(action.type === "PWD_INPUT"){
+  if (action.type === "PWD_INPUT") {
     return { value: action.val, isValid: action.val.trim().length > 6 };
   }
-  if(action.type === "PWD_BLUR"){
+  if (action.type === "PWD_BLUR") {
     return { value: state.value, isValid: state.value.trim().length > 6 };
   }
   return { value: "", isValid: false };
@@ -40,34 +40,33 @@ const Login = (props) => {
     value: "",
     isValid: null,
   });
-  // useEffect(()=>{
-  //   const identifier = setTimeout(()=>{
-  //     console.log('Check form validity!');
-  //     setFormIsValid(
-  //       enteredEmail.includes('@') && enteredPassword.trim().length > 6
-  //     );
-  //   },500);
-  //   // this allow user to take time for typing. after that we can handle requests
-  //   return () => {
-  //     clearTimeout(identifier);
-  //     console.log('Cleanup!');
-  //   };
 
-  // },[enteredEmail,enteredPassword]);
+  // to avoid validate after validate inputs
+  const { isValid: emailIsValid } = stateEmail;
+  const { isValid: passwordIsValid } = statePassword;
+  useEffect(() => {
+    const identifier = setTimeout(() => {
+      console.log("Check form validity!");
+      setFormIsValid(stateEmail.isValid && statePassword.isValid);
+    }, 500);
+    // this allow user to take time for typing. after that we can handle requests
+    return () => {
+      clearTimeout(identifier);
+      console.log("Cleanup!");
+    };
+  }, [emailIsValid, passwordIsValid]);
 
   const emailChangeHandler = (event) => {
     //setEnteredEmail(event.target.value);
     dispatchEmail({ type: "USER_INPUT", val: event.target.value });
 
-    setFormIsValid(
-      stateEmail.value.includes('@') && statePassword.isValid
-    );
+    //setFormIsValid(stateEmail.value.includes("@") && statePassword.isValid);
   };
 
   const passwordChangeHandler = (event) => {
     //setEnteredPassword(event.target.value);
-    dispatchPassword({ type: "PWD_INPUT", val : event.target.value});
-    setFormIsValid(event.target.value.trim().length > 6 && stateEmail.isValid);
+    dispatchPassword({ type: "PWD_INPUT", val: event.target.value });
+    //setFormIsValid(event.target.value.trim().length > 6 && stateEmail.isValid);
   };
 
   const validateEmailHandler = () => {
@@ -77,7 +76,7 @@ const Login = (props) => {
 
   const validatePasswordHandler = () => {
     //setPasswordIsValid(statePassword.value.trim().length > 6);
-    dispatchPassword({ type: "PWD_BLUR"});
+    dispatchPassword({ type: "PWD_BLUR" });
   };
 
   const submitHandler = (event) => {
